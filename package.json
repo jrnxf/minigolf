@@ -1,0 +1,46 @@
+{
+  "name": "minigolf",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.29.2",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "icons": "node scripts/icons.ts",
+    "dev": "pnpm icons && vite",
+    "dev:worker": "pnpm build && wrangler dev --port 8787",
+    "build": "pnpm icons && vite build",
+    "preview": "pnpm build && wrangler dev --port 8787",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "tsc -p tsconfig.json && tsc -p worker/tsconfig.json",
+    "test": "vitest run",
+    "test:e2e": "node tests/e2e/pass-and-play.ts",
+    "test:online": "node tests/e2e/online.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/outfit": "5.3.0",
+    "@fontsource/bungee": "5.3.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261011.1",
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1",
+    "vite": "8.3.4",
+    "vitest": "5.0.3",
+    "wrangler": "4.149.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "workerd"
+    ]
+  }
+}
