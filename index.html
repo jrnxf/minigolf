@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0a1f" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="Two-player neon mini golf for your phone. Pass the phone or play a friend online."
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Minigolf" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <title>Minigolf</title>
+  </head>
+  <body>
+    <!-- Home -->
+    <section class="screen" id="home" data-screen>
+      <div class="hero">
+        <svg class="hero-art" viewBox="0 0 200 150" aria-hidden="true">
+          <path class="hero-path" d="M40 128 L156 84 L118 46" />
+          <circle class="hero-cup" cx="118" cy="46" r="11" />
+          <path class="hero-flag" d="M118 35 V6 L140 14 L118 22" />
+          <circle class="hero-ball" cx="40" cy="128" r="8" />
+        </svg>
+        <h1 class="logo"><span>Mini</span><span>Golf</span></h1>
+        <p class="tagline">Two players · six holes · neon night</p>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="go-online">Play a friend online</button>
+        <button class="btn outline" id="go-local">Pass &amp; play on this phone</button>
+        <button class="btn ghost" id="resume-local" hidden>Resume your game</button>
+      </div>
+      <button class="sound-toggle" id="sound-toggle" aria-pressed="true">Sound on</button>
+    </section>
+
+    <!-- Pass and play setup -->
+    <section class="screen" id="local-setup" data-screen>
+      <div class="bar">
+        <button class="back" data-home aria-label="Back">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+        <span class="bar-title">Pass &amp; play</span>
+      </div>
+      <form class="pad stack" id="local-form">
+        <p class="lead">One phone, two players. Hand it over after every stroke.</p>
+        <label class="field" style="--c: var(--p1)">
+          <span>Player 1</span>
+          <input id="local-name-0" maxlength="12" autocomplete="off" spellcheck="false" placeholder="Zoe" />
+        </label>
+        <label class="field" style="--c: var(--p2)">
+          <span>Player 2</span>
+          <input id="local-name-1" maxlength="12" autocomplete="off" spellcheck="false" placeholder="Kai" />
+        </label>
+        <div class="grow"></div>
+        <button class="btn primary" type="submit">Tee off</button>
+      </form>
+    </section>
+
+    <!-- Online: create or join -->
+    <section class="screen" id="online-setup" data-screen>
+      <div class="bar">
+        <button class="back" data-home aria-label="Back">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+        <span class="bar-title">Play online</span>
+      </div>
+      <div class="pad stack">
+        <label class="field" style="--c: var(--p1)">
+          <span>Your name</span>
+          <input id="online-name" maxlength="12" autocomplete="off" spellcheck="false" placeholder="Zoe" />
+        </label>
+        <button class="btn primary" id="create-room">Create a room</button>
+        <div class="divider"><span>or join a friend</span></div>
+        <form class="code-row" id="code-form">
+          <input
+            id="code-input"
+            class="code-input"
+            maxlength="7"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            placeholder="CODE"
+            aria-label="Room code"
+          />
+          <button class="btn outline" type="submit">Join</button>
+        </form>
+        <p class="note" id="online-note" role="status"></p>
+      </div>
+    </section>
+
+    <!-- Lobby -->
+    <section class="screen" id="lobby" data-screen>
+      <div class="bar">
+        <button class="back" id="lobby-leave" aria-label="Leave room">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+        <span class="live" id="lobby-live"><i></i>Room open</span>
+      </div>
+      <div class="pad stack">
+        <div class="label">Room code</div>
+        <div class="room-code" id="room-code">-----</div>
+        <div class="invite">
+          <div class="invite-url" id="invite-url"></div>
+          <div class="invite-actions">
+            <button id="copy-link">Copy link</button>
+            <button id="share-link">Share</button>
+          </div>
+        </div>
+        <div class="slots">
+          <div class="slot" id="slot-0"></div>
+          <div class="slot" id="slot-1"></div>
+        </div>
+        <div class="grow"></div>
+        <button class="btn primary" id="start-round" disabled>Start round</button>
+        <p class="note center" id="lobby-note"></p>
+      </div>
+    </section>
+
+    <!-- Invite link landing -->
+    <section class="screen" id="join" data-screen>
+      <div class="bar">
+        <button class="back" data-home aria-label="Back">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+      </div>
+      <form class="pad stack" id="join-form">
+        <div class="label" id="join-code"></div>
+        <h2 class="headline" id="join-title">You're invited</h2>
+        <p class="lead" id="join-lead">Two players, six holes. Takes about ten minutes.</p>
+        <label class="field" style="--c: var(--p2)" id="join-name-field">
+          <span>Your name</span>
+          <input id="join-name" maxlength="12" autocomplete="off" spellcheck="false" placeholder="Kai" />
+        </label>
+        <div class="grow"></div>
+        <button class="btn primary" type="submit" id="join-go">Join game</button>
+        <button class="btn ghost" type="button" data-home id="join-home">Not now</button>
+      </form>
+    </section>
+
+    <!-- Game -->
+    <section class="screen" id="game" data-screen>
+      <header class="hud">
+        <div class="hud-player" id="hud-0" style="--c: var(--p1)">
+          <div class="hud-name"></div>
+          <div class="hud-meta"></div>
+        </div>
+        <div class="hud-hole">
+          <div class="hud-num" id="hud-hole">H1</div>
+          <div class="hud-par" id="hud-par">par 2</div>
+        </div>
+        <div class="hud-player right" id="hud-1" style="--c: var(--p2)">
+          <div class="hud-name"></div>
+          <div class="hud-meta"></div>
+        </div>
+      </header>
+      <main class="stage" id="stage">
+        <canvas id="canvas"></canvas>
+        <div class="callout" id="callout" aria-live="polite"></div>
+        <div class="banner" id="banner" role="status" hidden></div>
+        <div class="toast" id="toast" role="status"></div>
+      </main>
+      <footer class="turnbar">
+        <div class="turn" id="turn">
+          <i class="turn-ball"></i>
+          <div class="turn-text">
+            <div class="turn-who" id="turn-who"></div>
+            <div class="turn-tip" id="turn-tip"></div>
+          </div>
+          <div class="turn-strokes"><b id="turn-strokes">1</b><small>stroke</small></div>
+        </div>
+        <button class="menu-btn" id="menu-btn" aria-label="Menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" /></svg>
+        </button>
+      </footer>
+    </section>
+
+    <!-- Overlays -->
+    <div class="modal" id="handoff" hidden>
+      <div class="panel">
+        <div class="big-ball" id="handoff-ball"></div>
+        <h2 id="handoff-title">Pass to Kai</h2>
+        <p class="sub" id="handoff-sub">Hand the phone over</p>
+        <button class="btn primary" id="handoff-ready">I'm ready</button>
+      </div>
+    </div>
+
+    <div class="modal" id="scorecard" hidden>
+      <div class="panel">
+        <h2 id="score-title">Hole 1 clear</h2>
+        <p class="sub" id="score-sub"></p>
+        <table class="card-table" id="score-table"></table>
+        <button class="btn primary" id="score-next">Next hole</button>
+        <button class="btn ghost" id="score-home" hidden>Home</button>
+        <p class="note center" id="score-note"></p>
+      </div>
+    </div>
+
+    <div class="modal" id="menu" hidden>
+      <div class="panel">
+        <h2>Paused</h2>
+        <button class="btn primary" id="menu-resume">Resume</button>
+        <button class="btn outline" id="menu-sound">Sound on</button>
+        <button class="btn ghost danger" id="menu-quit">Leave game</button>
+      </div>
+    </div>
+
+    <div class="modal" id="ended" hidden>
+      <div class="panel">
+        <h2 id="ended-title">Game over</h2>
+        <p class="sub" id="ended-sub"></p>
+        <button class="btn primary" data-home>Home</button>
+      </div>
+    </div>
+
+    <div class="flash" id="flash"></div>
+    <script type="module" src="/src/client/main.ts"></script>
+  </body>
+</html>
