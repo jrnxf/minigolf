@@ -16,11 +16,12 @@ import { findShot } from "../../src/core/solver.ts";
 const HOST = "a".repeat(32);
 const GUEST = "b".repeat(32);
 const STRANGER = "c".repeat(32);
+const LIVE: [boolean, boolean] = [true, true];
 
 function playingRoom(): RoomRecord {
   const room = createRoom("BCDFG");
-  claimSeat(room, HOST, "Ana");
-  claimSeat(room, GUEST, "Kai");
+  claimSeat(room, HOST, "Ana", LIVE);
+  claimSeat(room, GUEST, "Kai", LIVE);
   start(room, 0);
   return room;
 }
@@ -28,16 +29,16 @@ function playingRoom(): RoomRecord {
 describe("seats", () => {
   it("seats the host first, then the friend, then refuses a third", () => {
     const room = createRoom("BCDFG");
-    expect(claimSeat(room, HOST, "Ana")).toBe(0);
-    expect(claimSeat(room, GUEST, "Kai")).toBe(1);
-    expect(claimSeat(room, STRANGER, "Zed")).toBe("full");
+    expect(claimSeat(room, HOST, "Ana", LIVE)).toBe(0);
+    expect(claimSeat(room, GUEST, "Kai", LIVE)).toBe(1);
+    expect(claimSeat(room, STRANGER, "Zed", LIVE)).toBe("full");
   });
 
   it("gives a player their own seat back by token", () => {
     const room = playingRoom();
-    expect(claimSeat(room, GUEST, "Kai")).toBe(1);
-    expect(claimSeat(room, HOST, "Ana")).toBe(0);
-    expect(claimSeat(room, STRANGER, "Zed")).toBe("full");
+    expect(claimSeat(room, GUEST, "Kai", LIVE)).toBe(1);
+    expect(claimSeat(room, HOST, "Ana", LIVE)).toBe(0);
+    expect(claimSeat(room, STRANGER, "Zed", LIVE)).toBe("full");
   });
 
   it("hides tokens and reports who is connected", () => {
@@ -53,9 +54,9 @@ describe("seats", () => {
 describe("lobby", () => {
   it("starts only when the host asks and both players are in", () => {
     const room = createRoom("BCDFG");
-    claimSeat(room, HOST, "Ana");
+    claimSeat(room, HOST, "Ana", LIVE);
     expect(start(room, 0)).toBe(false);
-    claimSeat(room, GUEST, "Kai");
+    claimSeat(room, GUEST, "Kai", LIVE);
     expect(start(room, 1)).toBe(false);
     expect(start(room, 0)).toBe(true);
     expect(room.status).toBe("playing");
@@ -64,20 +65,44 @@ describe("lobby", () => {
 
   it("frees the seat when the friend leaves the lobby", () => {
     const room = createRoom("BCDFG");
-    claimSeat(room, HOST, "Ana");
-    claimSeat(room, GUEST, "Kai");
+    claimSeat(room, HOST, "Ana", LIVE);
+    claimSeat(room, GUEST, "Kai", LIVE);
     leave(room, 1);
     expect(room.status).toBe("lobby");
     expect(room.seats[1]).toBeNull();
-    expect(claimSeat(room, STRANGER, "Zed")).toBe(1);
+    expect(claimSeat(room, STRANGER, "Zed", LIVE)).toBe(1);
+  });
+
+  it("gives a dropped friend's seat to a new phone, and the old token no longer owns it", () => {
+    const room = createRoom("BCDFG");
+    claimSeat(room, HOST, "Ana", LIVE);
+    claimSeat(room, GUEST, "Kai", LIVE);
+    expect(claimSeat(room, STRANGER, "Zed", [true, false])).toBe(1);
+    expect(room.seats[1]?.name).toBe("Zed");
+    expect(claimSeat(room, STRANGER, "Zed", LIVE)).toBe(1);
+    expect(claimSeat(room, GUEST, "Kai", LIVE)).toBe("full");
+  });
+
+  it("never gives away the host's seat", () => {
+    const room = createRoom("BCDFG");
+    claimSeat(room, HOST, "Ana", LIVE);
+    claimSeat(room, GUEST, "Kai", LIVE);
+    expect(claimSeat(room, STRANGER, "Zed", [false, true])).toBe("full");
+    expect(room.seats[0]?.name).toBe("Ana");
+  });
+
+  it("keeps a dropped player's seat once the round has started", () => {
+    const room = playingRoom();
+    expect(claimSeat(room, STRANGER, "Zed", [true, false])).toBe("full");
+    expect(claimSeat(room, GUEST, "Kai", [true, false])).toBe(1);
   });
 
   it("ends the room when the host leaves", () => {
     const room = createRoom("BCDFG");
-    claimSeat(room, HOST, "Ana");
+    claimSeat(room, HOST, "Ana", LIVE);
     leave(room, 0);
     expect(room.status).toBe("ended");
-    expect(claimSeat(room, HOST, "Ana")).toBe("gone");
+    expect(claimSeat(room, HOST, "Ana", LIVE)).toBe("gone");
   });
 });
 

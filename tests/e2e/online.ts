@@ -120,27 +120,40 @@ async function protocolTest() {
   check((await zed.next("error")).code === "full", "a third player is turned away");
   await waitFor("third socket closed", () => zed.closed);
 
-  kai.send({ t: "start" });
+  // The friend's phone drops in the lobby; another phone takes the seat.
+  kai.close();
+  await ana.next("room", (m) => m.room.players[1]?.connected === false);
+  const reopened = (await (await fetch(`${ORIGIN}/api/rooms/${code}`)).json()) as { open: boolean };
+  check(reopened.open, "join page sees the seat open again after the friend drops");
+  const kaiPhone = await Client.join(code, token("e"), "Kai");
+  check((await kaiPhone.next("welcome")).seat === 1, "a new phone takes a dropped friend's lobby seat");
+  const swapped = await ana.next("room", (m) => m.room.players[1]?.connected === true);
+  check(swapped.room.players[1]?.name === "Kai", "host sees the friend on the new phone");
+  const oldPhone = await Client.join(code, token("b"), "Kai");
+  check((await oldPhone.next("error")).code === "full", "the old phone no longer owns the seat");
+  await waitFor("old phone socket closed", () => oldPhone.closed);
+
+  kaiPhone.send({ t: "start" });
   ana.send({ t: "start" });
-  const started = await kai.next("room", (m) => m.room.status === "playing");
+  const started = await kaiPhone.next("room", (m) => m.room.status === "playing");
   check(started.room.match?.turn === 0, "only the host can start; the host tees off");
   await ana.next("room", (m) => m.room.status === "playing");
   let match: MatchState = started.room.match!;
 
   ana.send({ t: "aim", aim: { angle: -1.5, power: 0.4 } });
-  const aim = await kai.next("aim");
+  const aim = await kaiPhone.next("aim");
   check(aim.seat === 0 && aim.aim?.power === 0.4, "the friend sees the live aim");
-  kai.send({ t: "aim", aim: { angle: 1, power: 0.5 } });
+  kaiPhone.send({ t: "aim", aim: { angle: 1, power: 0.5 } });
   await sleep(300);
   check(!ana.inbox.some((m) => m.t === "aim"), "aim out of turn is not relayed");
 
-  kai.send({ t: "shot", shot: { vx: 0, vy: -300 }, at: 0 });
-  await kai.next("room");
+  kaiPhone.send({ t: "shot", shot: { vx: 0, vy: -300 }, at: 0 });
+  await kaiPhone.next("room");
   check(!ana.inbox.some((m) => m.t === "shot"), "a stroke out of turn is refused");
 
   const shot = findShot(holeOf(match), match.balls[0]).shot;
   ana.send({ t: "shot", shot, at: 0 });
-  const [sa, sk] = [await ana.next("shot"), await kai.next("shot")];
+  const [sa, sk] = [await ana.next("shot"), await kaiPhone.next("shot")];
   const local = applyShot(match, 0, shot)!.state;
   check(
     JSON.stringify(sa.room.match) === JSON.stringify(local),
@@ -152,10 +165,10 @@ async function protocolTest() {
   ana.send({ t: "shot", shot, at: 0 });
   check((await ana.next("room")).room.match?.strokes === 1, "a repeated stroke is refused and resynced");
 
-  kai.close();
+  kaiPhone.close();
   const away = await ana.next("room", (m) => m.room.players[1]?.connected === false);
   check(!!away, "host sees the friend drop");
-  const kai2 = await Client.join(code, token("b"), "Kai");
+  const kai2 = await Client.join(code, token("e"), "Kai");
   const back = await kai2.next("welcome");
   check(
     back.seat === 1 && JSON.stringify(back.room.match) === JSON.stringify(match),
@@ -183,7 +196,7 @@ async function protocolTest() {
   kai2.send({ t: "leave" });
   const ended = await ana.next("room", (m) => m.room.status === "ended");
   check(ended.room.leftBy === 1, "host is told the friend left");
-  const gone = await Client.join(code, token("b"), "Kai");
+  const gone = await Client.join(code, token("e"), "Kai");
   check((await gone.next("error")).code === "gone", "a finished room cannot be rejoined");
   const missing = await fetch(`${ORIGIN}/api/rooms/BCDFG`);
   check(missing.status === 404, "unknown rooms are 404");

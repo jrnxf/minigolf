@@ -63,7 +63,7 @@ export class Room extends DurableObject<Env> {
     return {
       status: this.room.status,
       host: this.room.seats[0]?.name ?? null,
-      open: this.room.status === "lobby" && !this.room.seats[1],
+      open: this.room.status === "lobby" && (!this.room.seats[1] || this.sockets(1).length === 0),
     };
   }
 
@@ -144,7 +144,7 @@ export class Room extends DurableObject<Env> {
   private async hello(ws: WebSocket, room: RoomRecord, v: number, token: string, name: string) {
     if (v !== PROTOCOL) return this.reject(ws, "version", CLOSE_GONE);
     const fallback = room.seats[0] ? "Player 2" : "Player 1";
-    const seat = claimSeat(room, token, cleanName(name, fallback));
+    const seat = claimSeat(room, token, cleanName(name, fallback), this.connected());
     if (typeof seat !== "number") return this.reject(ws, seat, seat === "full" ? CLOSE_FULL : CLOSE_GONE);
     // The same player on a fresh connection replaces their old one.
     for (const other of this.sockets(seat)) {
@@ -173,7 +173,11 @@ export class Room extends DurableObject<Env> {
   }
 
   private view() {
-    return roomView(this.room!, [this.sockets(0).length > 0, this.sockets(1).length > 0]);
+    return roomView(this.room!, this.connected());
+  }
+
+  private connected(): [boolean, boolean] {
+    return [this.sockets(0).length > 0, this.sockets(1).length > 0];
   }
 
   private async save() {

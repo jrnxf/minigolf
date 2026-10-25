@@ -59,8 +59,16 @@ export function roomView(room: RoomRecord, connected: [boolean, boolean]): RoomV
   };
 }
 
-/** Seats a player: back in their own seat by token, else the first free one while in the lobby. */
-export function claimSeat(room: RoomRecord, token: string, name: string): Seat | ErrorCode {
+/**
+ * Seats a player: back in their own seat by token, else the first free one while in the lobby.
+ * In the lobby a guest with no live socket (`connected`) gives up the seat to a newcomer.
+ */
+export function claimSeat(
+  room: RoomRecord,
+  token: string,
+  name: string,
+  connected: [boolean, boolean],
+): Seat | ErrorCode {
   if (room.status === "ended") return "gone";
   for (const seat of [0, 1] as const) {
     const s = room.seats[seat];
@@ -72,6 +80,10 @@ export function claimSeat(room: RoomRecord, token: string, name: string): Seat |
       room.seats[seat] = { token, name };
       return seat;
     }
+  }
+  if (!connected[1]) {
+    room.seats[1] = { token, name };
+    return 1;
   }
   return "full";
 }
