@@ -28,7 +28,7 @@ try {
   phone.fill("#local-name-1", "Kai");
   phone.click("#local-form button[type=submit]");
   await waitFor("game screen", () => phone.state().match);
-  check(phone.text("#turn-who") === "Zoe's turn", "Zoe tees off first");
+  check(phone.text("#turn-who") === "Zoe", "Zoe tees off first");
 
   let shots = 0;
   let handoffs = 0;

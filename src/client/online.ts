@@ -173,10 +173,9 @@ export class OnlineSession implements Driver {
     this.room = room;
     if (!room.match || !before) return this.applyRoom(room, false);
     if (seat === this.me && this.pending === before.strokes) {
-      // Our own stroke, already rolling: just settle on the server's result.
+      // Our own stroke, already rolling: settle on the server's result (a no-op when the prediction was right).
       this.pending = null;
       this.match = room.match;
-      this.shown = "";
       this.settle(room.match);
     } else {
       this.match = room.match;

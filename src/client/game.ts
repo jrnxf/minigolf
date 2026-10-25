@@ -313,7 +313,9 @@ export class GameScreen {
       // Pass-and-play: hand the phone over whenever the player changes.
       if (this.lastShooter !== null && next.turn !== this.lastShooter && this.overlay !== "scorecard") {
         this.handoffDue = true;
-        this.later(() => this.openHandoff(next), shooter === null ? 0 : 700);
+        // Let a sink callout play before the card covers the course.
+        const sank = shooter !== null && next.balls[shooter].done;
+        this.later(() => this.openHandoff(next), shooter === null ? 0 : sank ? 1300 : 700);
       }
     } else if (next.turn === me && (shooter === null ? newHole || prev?.turn !== me : shooter !== me)) {
       this.later(() => this.yourTurn(), shooter === null ? 300 : 600);
@@ -481,8 +483,8 @@ export class GameScreen {
       who = m.phase === "gameDone" ? "Final card" : `Hole ${m.holeIdx + 1} done`;
       tip = "Tap through the scorecard";
     } else if (me === null) {
-      who = `${name}'s turn`;
-      tip = "Drag anywhere to putt";
+      who = name;
+      tip = "Your turn · drag anywhere";
     } else if (mine) {
       who = "Your turn";
       tip = this.connected ? "Drag anywhere to putt" : "Reconnecting...";
@@ -494,6 +496,7 @@ export class GameScreen {
     $("turn-tip").textContent = tip;
     const ball = m.balls[seat];
     $("turn-strokes").textContent = String(rolling ? ball.strokes + 1 : Math.max(1, ball.strokes + 1));
+    $("turn-strokes").parentElement!.style.visibility = between ? "hidden" : "";
   }
 
   // ---------- overlays ----------
@@ -570,7 +573,10 @@ export class GameScreen {
     const rows: string[] = [];
     rows.push(
       `<tr><th></th>${([0, 1] as const)
-        .map((s) => `<th style="--c:${PLAYER_COLORS[s]}">${escapeHtml(this.names[s])}</th>`)
+        .map((s) => {
+          const long = Array.from(this.names[s]).length > 8 ? ' class="long"' : "";
+          return `<th${long} style="--c:${PLAYER_COLORS[s]}">${escapeHtml(this.names[s])}</th>`;
+        })
         .join("")}</tr>`,
     );
     HOLES.forEach((h, i) => {

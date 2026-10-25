@@ -935,6 +935,11 @@ button {
   font-weight: 600;
 }
 
+.panel .btn.ghost {
+  min-height: 44px;
+  margin-bottom: -6px;
+}
+
 .panel .btn.primary {
   --c: inherit;
   background: var(--c);
@@ -965,14 +970,21 @@ button {
   font-family: var(--display);
   font-weight: 400;
   font-size: 14px;
+  line-height: 1.15;
   color: var(--c);
   text-shadow: 0 0 8px var(--c);
   overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
+.card-table th.long {
+  font-size: 11px;
+}
+
 .card-table th:first-child,
 .card-table td:first-child {
+  width: 1%;
+  white-space: nowrap;
   text-align: left;
   color: var(--muted);
   font-family: var(--body);
