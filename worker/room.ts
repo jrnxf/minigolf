@@ -82,7 +82,11 @@ export class Room extends DurableObject<Env> {
     const { seat } = ws.deserializeAttachment() as Attachment;
 
     if (msg.t === "ping") return this.send(ws, { t: "pong" });
-    if (msg.t === "hello") return this.hello(ws, room, msg.v, msg.token, msg.name);
+    if (msg.t === "hello") {
+      // One player per socket: a second hello must not claim the other seat.
+      if (seat !== null) return this.send(ws, { t: "error", code: "bad" });
+      return this.hello(ws, room, msg.v, msg.token, msg.name);
+    }
     if (seat === null) return this.send(ws, { t: "error", code: "bad" });
 
     switch (msg.t) {

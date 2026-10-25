@@ -113,6 +113,9 @@ async function protocolTest() {
     "host sees the friend arrive",
   );
 
+  ana.send({ t: "hello", v: PROTOCOL, token: token("d"), name: "Sneaky" });
+  check((await ana.next("error")).code === "bad", "a socket cannot claim a second seat");
+
   const zed = await Client.join(code, token("c"), "Zed");
   check((await zed.next("error")).code === "full", "a third player is turned away");
   await waitFor("third socket closed", () => zed.closed);

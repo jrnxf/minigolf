@@ -19,6 +19,8 @@ export interface SocketHandlers {
 }
 
 const PING_MS = 15_000;
+/** How long a wake-up ping may take before the socket counts as dead. */
+const PROBE_MS = 4_000;
 /** No message for this long means the connection is dead even if the browser has not noticed. */
 const STALE_MS = 40_000;
 /** Server close codes after which reconnecting would not help. */
@@ -130,11 +132,22 @@ export class RoomSocket {
 
   private wake = () => {
     if (this.stopped || document.visibilityState === "hidden") return;
-    if (!this.ws || this.ws.readyState === WebSocket.CLOSED || this.ws.readyState === WebSocket.CLOSING) {
+    const ws = this.ws;
+    if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
       this.connect();
-    } else if (this.ws.readyState === WebSocket.OPEN && Date.now() - this.lastHeard > PING_MS) {
-      // Back from the background: check the line is still alive.
+    } else if (ws.readyState === WebSocket.OPEN && Date.now() - this.lastHeard > PING_MS) {
+      // Back from the background, where a socket can die without a close event:
+      // ping, and start over if nothing comes back quickly.
+      const asked = Date.now();
       this.send({ t: "ping" });
+      window.setTimeout(() => {
+        if (this.ws === ws && !this.stopped && this.lastHeard < asked) {
+          ws.close();
+          this.ws = null;
+          clearInterval(this.pinger);
+          this.scheduleRetry(0);
+        }
+      }, PROBE_MS);
     }
   };
 }
