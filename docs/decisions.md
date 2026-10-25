@@ -22,7 +22,7 @@ The room replays every stroke with the shared physics and broadcasts the result,
 
 ## No accounts, no personal data kept
 
-A phone gets a random token on first launch and keeps it in local storage. That token is the only thing that ties a player to a seat, which is enough to take the seat back after a dropped connection or a reload. Names are typed per game and live only in the room. A room deletes all of its storage two hours after its last activity, or ten minutes after a player leaves.
+A phone gets a random token on first launch and keeps it in local storage. That token is the only thing that ties a player to a seat, which is enough to take the seat back after a dropped connection or a reload. The one exception is the lobby: a guest seat whose phone has no live connection goes to the next phone that opens the invite, so a stale join cannot lock the host's friend out. Names are typed per game and live only in the room. A room deletes all of its storage two hours after its last activity, or ten minutes after a player leaves.
 
 ## Turn and score rules
 
