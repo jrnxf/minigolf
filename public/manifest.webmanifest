@@ -1,14 +1,14 @@
 {
   "name": "Minigolf",
   "short_name": "Minigolf",
-  "description": "Neon mini golf for your phone. Eighteen holes: play solo, pass the phone or play a friend online.",
+  "description": "Mini golf for your phone. Eighteen holes: play solo, pass the phone or play a friend online.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0b0a1f",
-  "theme_color": "#0b0a1f",
+  "background_color": "#1d281a",
+  "theme_color": "#1d281a",
   "categories": ["games"],
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },

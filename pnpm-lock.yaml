@@ -11,9 +11,6 @@ importers:
       '@fontsource-variable/outfit':
         specifier: 5.3.0
         version: 5.3.0
-      '@fontsource/bungee':
-        specifier: 5.3.0
-        version: 5.3.0
     devDependencies:
       '@cloudflare/workers-types':
         specifier: 5.20261011.1
@@ -307,9 +304,6 @@ packages:
 
   '@fontsource-variable/outfit@5.3.0':
     resolution: {integrity: sha512-fPb5XnYK0k7SbR++HEmm4+ZqDszmLKQ+sPRUr8oQ/KNC0vy6r6hazJFe8iYozv4cqlHbvJ/JECkJWrfDodUMVQ==}
-
-  '@fontsource/bungee@5.3.0':
-    resolution: {integrity: sha512-vKwbDE7yMrqfGxgFan+diPLwgWp9j4FGYaLm+OhUoqYO6Pr02QIi/p0KiTW0E/7uiXqfTd6cMj+/E4h2sc3Ocg==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -1483,8 +1477,6 @@ snapshots:
       levn: 0.4.1
 
   '@fontsource-variable/outfit@5.3.0': {}
-
-  '@fontsource/bungee@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:

@@ -20,7 +20,14 @@ export interface ScreenState {
   busy: boolean;
   canAim: boolean;
   overlay: string | null;
-  view: { s: number; ox: number; oy: number; maxDrag: number };
+  view: {
+    s: number;
+    ox: number;
+    oy: number;
+    maxDrag: number;
+    baked: boolean;
+    bake: { ms: number; samples: number };
+  };
 }
 
 export class Browser {

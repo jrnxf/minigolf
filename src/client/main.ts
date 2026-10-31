@@ -1,4 +1,3 @@
-import "@fontsource/bungee/latin-400.css";
 import "@fontsource-variable/outfit/wght.css";
 import "./styles.css";
 
@@ -230,7 +229,7 @@ $("share-link").addEventListener("click", async () => {
   const url = `${location.origin}${location.pathname}`;
   if (navigator.share) {
     try {
-      await navigator.share({ title: "Mini golf?", text: "Play a round of neon mini golf with me", url });
+      await navigator.share({ title: "Mini golf?", text: "Play a round of mini golf with me", url });
     } catch {
       // Dismissed.
     }

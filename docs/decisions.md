@@ -8,7 +8,7 @@ One codebase that runs on any phone, installs from the browser to the home scree
 
 ## TypeScript, Vite, canvas, no UI framework
 
-The game is one canvas plus a handful of simple screens. Vite gives a fast dev server and a hashed production build with almost no config. A framework would add weight and churn for a few buttons and forms, so screens are plain HTML in `index.html` shown and hidden by id. Canvas 2D draws the course; the static parts (floor, walls, sand) are drawn once per hole into an offscreen layer because glow blur is expensive on phones.
+The game is one canvas plus a handful of simple screens. Vite gives a fast dev server and a hashed production build with almost no config. A framework would add weight and churn for a few buttons and forms, so screens are plain HTML in `index.html` shown and hidden by id. Canvas 2D draws the course; the static parts are baked once per hole (see "A baked, lit course") and blitted each frame.
 
 ## One shared, deterministic core
 
@@ -48,9 +48,13 @@ Chosen on the prototype board. You drag anywhere on the screen (no need to touch
 
 Also from the board: after each stroke a full-screen "Pass to Kai / I'm ready" card covers the course until the next player taps, so the next aim stays private. Input is blocked from the moment the stroke ends until the card is dismissed.
 
+## A baked, lit course
+
+The course looks like a real outdoor putt-putt: loop-pile carpet, red timber rails with a black rubber strip, white-and-red posts, loose sand, a steep Volcano with a red carpet crater, bark mulch around it, and a low afternoon sun with hard shadows. To get depth without a 3D engine, each hole is baked into a heightfield (rails, posts, hills, slopes, sand dips), lit per sample (normal, soft shadow, ambient occlusion) and drawn with a slight oblique camera so raised things show their front faces. `src/client/bake.ts` does it with no DOM, so it runs in a worker (`bake.worker.ts`) and a unit test pins the look. The bake happens once per hole and screen size; the next hole is baked during play, and a hole that is not ready yet shows flat colours and fades the baked picture in. Each frame is one blit plus the flag, aim preview, balls and power ring. The texture stays near one cell per unit on purpose: finer fibre aliased into a velvet fuzz. Physics is untouched, so the Volcano looks steeper than its push feels.
+
 ## Fonts and icons are not committed binaries
 
-Fonts come from pinned `@fontsource` packages and are bundled and cached for offline use, so no request goes to a font CDN. App icons are drawn by `scripts/icons.ts` at build time (a tiny PNG encoder on Node's zlib), which keeps the repository free of image files.
+Fonts (Outfit only) come from a pinned `@fontsource` package and are bundled and cached for offline use, so no request goes to a font CDN. App icons are drawn by `scripts/icons.ts` at build time (a tiny PNG encoder on Node's zlib), which keeps the repository free of image files.
 
 ## Pinned versions
 
