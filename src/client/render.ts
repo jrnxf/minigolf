@@ -277,13 +277,11 @@ export class Renderer {
       this.current = { hole: scene.hole, key };
       this.waitSince = 0;
       this.fadeSince = 0;
+      this.pump();
     }
     const entry = this.entry();
     if (entry) entry.used = now;
-    else {
-      this.pump();
-      this.waitSince ||= now;
-    }
+    else this.waitSince ||= now;
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     let fade = 1;
