@@ -58,4 +58,4 @@ Fonts (Outfit only) come from a pinned `@fontsource` package and are bundled and
 
 ## Pinned versions
 
-Every npm dependency is pinned to an exact version and GitHub Actions are pinned by commit. TypeScript stays on 6.0 because `typescript-eslint` does not support 7.0 yet.
+Every npm dependency is pinned to an exact version. TypeScript stays on 6.0 because `typescript-eslint` does not support 7.0 yet.

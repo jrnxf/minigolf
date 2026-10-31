@@ -43,7 +43,7 @@ pnpm test:online    # two clients against `wrangler dev`: join, turns, reconnect
 pnpm test:look      # plays to the Volcano, Sand Alley and Twin Peaks and checks the colours on screen
 ```
 
-The browser suites drive Chrome through [`chrome-devtools-axi`](https://www.npmjs.com/package/chrome-devtools-axi), which must be on your `PATH`. Set `E2E_SHOTS=<folder>` to keep their screenshots. CI runs lint, type-check, unit tests and a build.
+The browser suites drive Chrome through [`chrome-devtools-axi`](https://www.npmjs.com/package/chrome-devtools-axi), which must be on your `PATH`. Set `E2E_SHOTS=<folder>` to keep their screenshots. Cloudflare Workers Builds runs lint, type-check, unit tests and a build on every push.
 
 ## Deploy
 
