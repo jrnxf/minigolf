@@ -19,11 +19,11 @@
     "test": "vitest run",
     "test:e2e": "node tests/e2e/pass-and-play.ts",
     "test:solo": "node tests/e2e/solo.ts",
-    "test:online": "node tests/e2e/online.ts"
+    "test:online": "node tests/e2e/online.ts",
+    "test:look": "node tests/e2e/look.ts"
   },
   "dependencies": {
-    "@fontsource-variable/outfit": "5.3.0",
-    "@fontsource/bungee": "5.3.0"
+    "@fontsource-variable/outfit": "5.3.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261011.1",

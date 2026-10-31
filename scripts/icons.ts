@@ -1,4 +1,4 @@
-// Draws the app icons (a glowing ball putting toward a neon cup) into
+// Draws the app icons (a white ball putting toward a red-flagged cup on loop-pile carpet) into
 // public/icons. Generated at build time so the repo holds no binary images.
 
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -7,11 +7,17 @@ import { deflateSync, crc32 } from "node:zlib";
 const OUT = new URL("../public/icons/", import.meta.url);
 
 type RGB = [number, number, number];
-const BG_TOP: RGB = [21, 18, 58];
-const BG: RGB = [11, 10, 31];
-const CYAN: RGB = [41, 240, 255];
-const LIME: RGB = [198, 255, 61];
+const GRASS_TOP: RGB = [74, 160, 90];
+const GRASS: RGB = [52, 124, 70];
+const RAIL: RGB = [184, 64, 46];
+const CUP_DARK: RGB = [20, 18, 14];
+const CUP_RIM: RGB = [241, 239, 233];
+const FLAG_RED: RGB = [226, 64, 47];
+const POLE: RGB = [232, 232, 232];
+const BALL_C: RGB = [255, 255, 255];
+const BALL_SHADE: RGB = [176, 176, 168];
 const WHITE: RGB = [255, 255, 255];
+const LINE: RGB = [244, 246, 234];
 
 // Icon layout in unit coordinates (0..1), before the maskable safe-zone scale.
 const BALL = { x: 0.33, y: 0.69, r: 0.085 };
@@ -33,14 +39,14 @@ function segDist(px: number, py: number, ax: number, ay: number, bx: number, by:
 const smooth = (edge: number, d: number, aa: number) => Math.max(0, Math.min(1, (edge - d) / aa + 0.5));
 
 function pixel(u: number, v: number, aa: number): RGB {
+  // Carpet with a timber rail around the edge.
   const g = Math.min(1, Math.hypot(u - 0.5, v * 0.9) / 0.9);
-  let c: RGB = [0, 1, 2].map((i) => BG_TOP[i]! * (1 - g) + BG[i]! * g) as RGB;
-  const add = (col: RGB, k: number) => {
-    c = c.map((x, i) => Math.min(255, x + col[i]! * k)) as RGB;
-  };
+  let c: RGB = [0, 1, 2].map((i) => GRASS_TOP[i]! * (1 - g) + GRASS[i]! * g) as RGB;
   const over = (col: RGB, a: number) => {
     c = c.map((x, i) => x * (1 - a) + col[i]! * a) as RGB;
   };
+  const edge = Math.min(u, v, 1 - u, 1 - v);
+  over(RAIL, smooth(0.045, edge, aa));
 
   // Dotted putt line from the ball's edge to the cup's edge.
   const len = Math.hypot(CUP.x - BALL.x, CUP.y - BALL.y);
@@ -53,27 +59,40 @@ function pixel(u: number, v: number, aa: number): RGB {
     const y = BALL.y + (CUP.y - BALL.y) * t;
     dot = Math.min(dot, Math.hypot(u - x, v - y));
   }
-  add(CYAN, 0.5 * Math.exp(-dot / 0.02));
-  over(CYAN, smooth(0.016, dot, aa));
+  over(LINE, smooth(0.016, dot, aa));
 
-  // Cup: black hole, lime ring and flag, all glowing.
+  // Cup: dark hole with a pale liner rim, and a flag.
   const dc = Math.hypot(u - CUP.x, v - CUP.y);
-  over([0, 0, 0], smooth(CUP.r, dc, aa));
-  const ring = Math.abs(dc - CUP.r);
-  let flag = Infinity;
-  for (let i = 0; i < FLAG.length - 1; i++) {
-    const [a, b] = [FLAG[i]!, FLAG[i + 1]!];
-    flag = Math.min(flag, segDist(u, v, a[0], a[1], b[0], b[1]));
-  }
-  const lime = Math.min(ring, flag);
-  add(LIME, 0.55 * Math.exp(-lime / 0.03));
-  over(LIME, smooth(0.014, lime, aa));
+  over(CUP_RIM, smooth(CUP.r, dc, aa));
+  over(CUP_DARK, smooth(CUP.r - 0.02, dc, aa));
+  const [pa, pb] = [FLAG[0]!, FLAG[1]!];
+  const pole = segDist(u, v, pa[0], pa[1], pb[0], pb[1]);
+  over(POLE, smooth(0.01, pole, aa));
+  // Flag cloth: the triangle from the top of the pole.
+  const [f1, f2, f3] = [FLAG[1]!, FLAG[2]!, FLAG[3]!];
+  const inTri = (() => {
+    const d = (a: readonly number[], b: readonly number[]) =>
+      (u - b[0]!) * (a[1]! - b[1]!) - (a[0]! - b[0]!) * (v - b[1]!);
+    const d1 = d(f1, f2);
+    const d2 = d(f2, f3);
+    const d3 = d(f3, f1);
+    return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+  })();
+  if (inTri) over(FLAG_RED, 1);
 
-  // Ball: white with a cyan rim and a strong glow.
+  // Ball: white with a soft highlight and a shadow.
+  const sh = Math.hypot(u - BALL.x - 0.018, v - BALL.y - 0.022);
+  over([0, 0, 0], smooth(BALL.r, sh, aa) * 0.3);
   const db = Math.hypot(u - BALL.x, v - BALL.y);
-  add(CYAN, 0.9 * Math.exp(-Math.max(0, db - BALL.r) / 0.045));
-  over(CYAN, smooth(BALL.r, db, aa));
-  over(WHITE, smooth(BALL.r - 0.022, db, aa));
+  const lit = Math.hypot(u - BALL.x + BALL.r * 0.3, v - BALL.y + BALL.r * 0.3) / (BALL.r * 1.2);
+  const body: RGB = [0, 1, 2].map(
+    (i) => BALL_C[i]! * (1 - Math.min(1, lit)) + BALL_SHADE[i]! * Math.min(1, lit),
+  ) as RGB;
+  over(body, smooth(BALL.r, db, aa));
+  over(
+    WHITE,
+    smooth(BALL.r * 0.22, Math.hypot(u - BALL.x + BALL.r * 0.35, v - BALL.y + BALL.r * 0.35), aa) * 0.85,
+  );
   return c;
 }
 
@@ -116,16 +135,17 @@ function png(size: number, scale: number): Buffer {
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="0%" r="100%"><stop offset="0" stop-color="#15123a"/><stop offset="1" stop-color="#0b0a1f"/></radialGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="bg" cx="50%" cy="0%" r="100%"><stop offset="0" stop-color="#4aa05a"/><stop offset="1" stop-color="#347c46"/></radialGradient>
+    <radialGradient id="ball" cx="34%" cy="30%" r="75%"><stop offset="0" stop-color="#fff"/><stop offset="0.3" stop-color="#fff"/><stop offset="1" stop-color="#b0b0a8"/></radialGradient>
   </defs>
-  <rect width="100" height="100" rx="22" fill="url(#bg)"/>
-  <g filter="url(#glow)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M33 69 L64 40" stroke="#29f0ff" stroke-width="3" stroke-dasharray="0.1 4.4"/>
-    <circle cx="64" cy="40" r="12" fill="#000" stroke="#c6ff3d" stroke-width="2.8"/>
-    <path d="M64 28 V12 L77 16.5 L64 21" stroke="#c6ff3d" stroke-width="2.8"/>
-    <circle cx="33" cy="69" r="7.4" fill="#fff" stroke="#29f0ff" stroke-width="2.6"/>
-  </g>
+  <rect width="100" height="100" rx="22" fill="#b8402e"/>
+  <rect x="4.5" y="4.5" width="91" height="91" rx="18" fill="url(#bg)"/>
+  <path d="M33 69 L64 40" stroke="#f4f6ea" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.1 4.4" fill="none"/>
+  <circle cx="64" cy="40" r="12" fill="#14120e" stroke="#f1efe9" stroke-width="2.4"/>
+  <path d="M64 28 V12" stroke="#e8e8e8" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M64 12 L77 16.5 L64 21 Z" fill="#e2402f"/>
+  <circle cx="34.8" cy="71.2" r="7.4" fill="#000" opacity="0.3"/>
+  <circle cx="33" cy="69" r="7.4" fill="url(#ball)"/>
 </svg>
 `;
 

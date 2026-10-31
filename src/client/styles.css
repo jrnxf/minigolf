@@ -1,17 +1,17 @@
 :root {
-  --bg: #0b0a1f;
-  --bg-2: #15123a;
-  --panel: #100e29;
-  --ink: #f3f0ff;
-  --muted: #8f88c9;
-  --line: rgba(243, 240, 255, 0.14);
-  --p1: #29f0ff;
-  --p2: #ff3fb4;
-  --lime: #c6ff3d;
-  --violet: #7b5cff;
-  --amber: #ffb020;
-  --danger: #ff5b6e;
-  --display: "Bungee", "Impact", system-ui, sans-serif;
+  --bg: #1d281a;
+  --bg-2: #2a3926;
+  --panel: #2f3f2a;
+  --ink: #f4f6ea;
+  --muted: #b0bea7;
+  --line: rgba(244, 246, 234, 0.16);
+  --p1: #ff8a1f;
+  --p2: #3b8cff;
+  --accent: #ffd23f;
+  --on-accent: #1d1a10;
+  --amber: #f0b441;
+  --danger: #ff8a7a;
+  --display: "Outfit Variable", system-ui, sans-serif;
   --body: "Outfit Variable", system-ui, sans-serif;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -31,7 +31,7 @@ body {
 }
 
 body {
-  background: radial-gradient(120% 70% at 50% 0%, var(--bg-2), var(--bg) 70%) var(--bg);
+  background: linear-gradient(180deg, var(--bg-2), var(--bg) 70%) var(--bg);
   color: var(--ink);
   font-family: var(--body);
   font-size: 16px;
@@ -107,6 +107,7 @@ button {
 
 .bar-title {
   font-family: var(--display);
+  font-weight: 800;
   font-size: 18px;
   letter-spacing: 0.02em;
   margin-right: auto;
@@ -155,10 +156,10 @@ button {
 
 .headline {
   font-family: var(--display);
+  font-weight: 800;
   font-size: 34px;
   line-height: 1.05;
-  color: var(--lime);
-  text-shadow: 0 0 16px rgba(198, 255, 61, 0.55);
+  color: var(--accent);
   overflow-wrap: anywhere;
 }
 
@@ -180,7 +181,7 @@ button {
 /* ---------- buttons and fields ---------- */
 
 .btn {
-  --c: var(--lime);
+  --c: var(--accent);
   width: 100%;
   min-height: 54px;
   border-radius: 16px;
@@ -188,11 +189,10 @@ button {
   padding: 12px 18px;
   font-family: var(--display);
   font-size: 17px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.01em;
   transition:
     transform 0.12s ease-out,
-    box-shadow 0.2s,
     opacity 0.2s;
 }
 
@@ -202,17 +202,15 @@ button {
 
 .btn.primary {
   background: var(--c);
-  color: var(--bg);
-  box-shadow: 0 0 24px -4px var(--c);
+  color: var(--on-accent);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.28);
 }
 
 .btn.outline {
-  --c: var(--p1);
-  background: rgba(41, 240, 255, 0.06);
-  color: var(--c);
-  box-shadow:
-    0 0 18px -6px var(--c),
-    inset 0 0 14px -8px var(--c);
+  --c: var(--ink);
+  border-color: rgba(244, 246, 234, 0.34);
+  background: rgba(244, 246, 234, 0.06);
+  color: var(--ink);
 }
 
 .btn.ghost {
@@ -228,7 +226,6 @@ button {
 
 .btn:disabled {
   opacity: 0.35;
-  box-shadow: none;
   cursor: default;
 }
 
@@ -266,12 +263,12 @@ button {
 
 .field input:focus {
   border-color: var(--c);
-  box-shadow: 0 0 16px -4px var(--c);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .field input::placeholder,
 .code-input::placeholder {
-  color: rgba(143, 136, 201, 0.55);
+  color: rgba(176, 190, 167, 0.55);
 }
 
 .divider {
@@ -305,13 +302,13 @@ button {
 
 .code-input {
   font-family: var(--display);
+  font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .code-input:focus {
-  border-color: var(--p1);
-  box-shadow: 0 0 16px -4px var(--p1);
+  border-color: var(--accent);
 }
 
 /* ---------- home ---------- */
@@ -339,12 +336,11 @@ button {
 
 .hero-path {
   fill: none;
-  stroke: var(--p1);
+  stroke: var(--ink);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 2 9;
-  filter: drop-shadow(0 0 4px var(--p1));
   animation: hero-dash 1.6s linear infinite;
 }
 
@@ -354,38 +350,43 @@ button {
   }
 }
 
+.hero-green {
+  fill: #3e8f4e;
+  stroke: #b8402e;
+  stroke-width: 6;
+  stroke-linejoin: round;
+}
+
 .hero-cup {
-  fill: #000;
-  stroke: var(--lime);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 6px var(--lime));
+  fill: #14120e;
+  stroke: #f1efe9;
+  stroke-width: 2.5;
+}
+
+.hero-pole {
+  fill: none;
+  stroke: #e8e8e8;
+  stroke-width: 2.5;
+  stroke-linecap: round;
 }
 
 .hero-flag {
-  fill: none;
-  stroke: var(--lime);
-  stroke-width: 3;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 5px var(--lime));
+  fill: var(--accent);
 }
 
 .hero-ball {
-  fill: #fff;
-  stroke: var(--p1);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 8px var(--p1));
+  fill: var(--p1);
+  stroke: rgba(20, 14, 10, 0.4);
+  stroke-width: 1;
 }
 
 .logo {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 800;
   font-size: 68px;
   line-height: 0.92;
-  color: var(--lime);
+  color: var(--accent);
   text-transform: uppercase;
-  text-shadow:
-    0 0 14px rgba(198, 255, 61, 0.75),
-    0 0 44px rgba(198, 255, 61, 0.35);
 }
 
 .logo span {
@@ -393,10 +394,7 @@ button {
 }
 
 .logo span + span {
-  color: var(--p2);
-  text-shadow:
-    0 0 14px rgba(255, 63, 180, 0.75),
-    0 0 44px rgba(255, 63, 180, 0.35);
+  color: var(--ink);
 }
 
 .tagline {
@@ -416,7 +414,7 @@ button {
 .best {
   margin-top: 4px;
   text-align: center;
-  color: var(--lime);
+  color: var(--accent);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -453,22 +451,20 @@ button {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--lime);
-  box-shadow: 0 0 10px var(--lime);
+  background: var(--accent);
 }
 
 .live.off i {
   background: var(--amber);
-  box-shadow: 0 0 10px var(--amber);
 }
 
 .room-code {
   font-family: var(--display);
+  font-weight: 800;
   font-size: 56px;
   line-height: 1;
   letter-spacing: 0.1em;
-  color: var(--lime);
-  text-shadow: 0 0 18px rgba(198, 255, 61, 0.6);
+  color: var(--accent);
 }
 
 .invite {
@@ -496,8 +492,8 @@ button {
 .invite-actions button {
   min-height: 52px;
   border: 0;
-  background: rgba(41, 240, 255, 0.05);
-  color: var(--p1);
+  background: rgba(244, 246, 234, 0.05);
+  color: var(--ink);
   font-weight: 700;
   font-size: 16px;
 }
@@ -507,7 +503,7 @@ button {
 }
 
 .invite-actions button:active {
-  background: rgba(41, 240, 255, 0.14);
+  background: rgba(244, 246, 234, 0.14);
 }
 
 .slots {
@@ -525,13 +521,11 @@ button {
   padding: 12px 16px;
   border-radius: 16px;
   border: 2px solid var(--c);
-  box-shadow: 0 0 16px -8px var(--c);
 }
 
 .slot.empty {
   border-style: dashed;
   border-color: var(--line);
-  box-shadow: none;
 }
 
 .slot .ball {
@@ -539,9 +533,13 @@ button {
   height: 22px;
   flex: none;
   border-radius: 50%;
-  background: #fff;
-  border: 3px solid var(--c);
-  box-shadow: 0 0 12px var(--c);
+  background: radial-gradient(
+    circle at 34% 30%,
+    #fff 0 10%,
+    var(--c) 46%,
+    color-mix(in srgb, var(--c) 55%, #000) 100%
+  );
+  box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.35);
 }
 
 .slot.empty .ball {
@@ -552,6 +550,7 @@ button {
 
 .slot .nm {
   font-family: var(--display);
+  font-weight: 800;
   font-size: 18px;
   color: var(--c);
   min-width: 0;
@@ -627,9 +626,9 @@ button {
   opacity: 1;
 }
 
-/* No overflow clipping here: it would cut the glow into a box. Long names get a smaller size instead. */
 .hud-name {
   font-family: var(--display);
+  font-weight: 800;
   font-size: 16px;
   color: var(--c);
   white-space: nowrap;
@@ -645,9 +644,6 @@ button {
 }
 
 .hud-player.on .hud-name {
-  text-shadow:
-    0 0 10px var(--c),
-    0 0 22px var(--c);
 }
 
 .hud-meta {
@@ -663,10 +659,10 @@ button {
 
 .hud-num {
   font-family: var(--display);
+  font-weight: 800;
   font-size: 26px;
   line-height: 1;
-  color: var(--lime);
-  text-shadow: 0 0 12px rgba(198, 255, 61, 0.7);
+  color: var(--accent);
 }
 
 .hud-par {
@@ -712,9 +708,6 @@ button {
   border-radius: 16px;
   border: 2px solid var(--c);
   background: rgba(255, 255, 255, 0.03);
-  box-shadow:
-    0 0 18px -6px var(--c),
-    inset 0 0 18px -10px var(--c);
   transition:
     border-color 0.3s,
     box-shadow 0.3s;
@@ -722,7 +715,6 @@ button {
 
 .turn.wait {
   border-color: var(--line);
-  box-shadow: none;
 }
 
 .turn-ball {
@@ -730,9 +722,13 @@ button {
   height: 18px;
   flex: none;
   border-radius: 50%;
-  background: #fff;
-  border: 3px solid var(--c);
-  box-shadow: 0 0 12px var(--c);
+  background: radial-gradient(
+    circle at 34% 30%,
+    #fff 0 10%,
+    var(--c) 46%,
+    color-mix(in srgb, var(--c) 55%, #000) 100%
+  );
+  box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.35);
 }
 
 .turn-text {
@@ -742,6 +738,7 @@ button {
 
 .turn-who {
   font-family: var(--display);
+  font-weight: 800;
   font-size: 16px;
   color: var(--c);
   overflow: hidden;
@@ -768,7 +765,7 @@ button {
 .turn-strokes b {
   display: block;
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 800;
   font-size: 22px;
 }
 
@@ -791,19 +788,17 @@ button {
 }
 
 .callout {
-  --c: var(--lime);
+  --c: var(--accent);
   position: absolute;
   left: 12px;
   right: 12px;
   top: 38%;
   text-align: center;
   font-family: var(--display);
+  font-weight: 800;
   font-size: 42px;
   line-height: 1.05;
   color: var(--c);
-  text-shadow:
-    0 0 14px var(--c),
-    0 0 40px var(--c);
   pointer-events: none;
   opacity: 0;
   transform: scale(0.6);
@@ -826,7 +821,7 @@ button {
 }
 
 .toast {
-  --c: var(--lime);
+  --c: var(--accent);
   position: absolute;
   left: 50%;
   top: 10px;
@@ -835,8 +830,8 @@ button {
   border-radius: 999px;
   border: 2px solid var(--c);
   background: var(--panel);
-  box-shadow: 0 0 22px -4px var(--c);
   font-family: var(--display);
+  font-weight: 800;
   font-size: 16px;
   color: var(--c);
   white-space: nowrap;
@@ -868,8 +863,7 @@ button {
   padding: 7px 14px;
   border-radius: 999px;
   border: 2px solid var(--amber);
-  background: rgba(16, 14, 41, 0.94);
-  box-shadow: 0 0 18px -6px var(--amber);
+  background: rgba(29, 40, 26, 0.94);
   color: var(--ink);
   font-size: 14px;
   font-weight: 600;
@@ -878,8 +872,7 @@ button {
 }
 
 .banner.ok {
-  border-color: var(--lime);
-  box-shadow: 0 0 18px -6px var(--lime);
+  border-color: var(--accent);
 }
 
 /* Keep the your-turn toast clear of a connection banner. */
@@ -896,7 +889,7 @@ button {
   display: grid;
   place-items: center;
   padding: calc(var(--safe-top) + 20px) 20px calc(var(--safe-bottom) + 20px);
-  background: rgba(5, 4, 18, 0.8);
+  background: rgba(14, 20, 12, 0.78);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   animation: fade-in 0.25s ease-out;
@@ -909,7 +902,7 @@ button {
 }
 
 .panel {
-  --c: var(--lime);
+  --c: var(--accent);
   width: 100%;
   max-width: 360px;
   max-height: 100%;
@@ -921,7 +914,6 @@ button {
   border-radius: 22px;
   padding: 24px 20px 18px;
   background: var(--panel);
-  box-shadow: 0 0 34px -8px var(--c);
   text-align: center;
   animation: panel-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
 }
@@ -934,11 +926,10 @@ button {
 
 .panel h2 {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 800;
   font-size: 30px;
   line-height: 1.05;
   color: var(--c);
-  text-shadow: 0 0 14px var(--c);
   overflow-wrap: anywhere;
 }
 
@@ -964,11 +955,13 @@ button {
   height: 64px;
   margin: 4px auto 6px;
   border-radius: 50%;
-  background: #fff;
-  border: 7px solid var(--c);
-  box-shadow:
-    0 0 24px var(--c),
-    0 0 60px -10px var(--c);
+  background: radial-gradient(
+    circle at 34% 30%,
+    #fff 0 10%,
+    var(--c) 46%,
+    color-mix(in srgb, var(--c) 55%, #000) 100%
+  );
+  box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.35);
 }
 
 /* Title and buttons stay put; only the eighteen rows scroll. */
@@ -1002,11 +995,10 @@ button {
 .card-table th {
   padding: 6px 4px;
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 800;
   font-size: 14px;
   line-height: 1.15;
   color: var(--c);
-  text-shadow: 0 0 8px var(--c);
   overflow-wrap: anywhere;
   text-transform: uppercase;
 }
@@ -1022,7 +1014,6 @@ button {
   position: sticky;
   bottom: 0;
   background: var(--panel);
-  box-shadow: 0 -2px 0 var(--line);
 }
 
 .card-table th.long {
@@ -1038,7 +1029,6 @@ button {
   font-family: var(--body);
   font-size: 13px;
   font-weight: 600;
-  text-shadow: none;
   letter-spacing: 0.04em;
 }
 
@@ -1051,21 +1041,20 @@ button {
 }
 
 .card-table td.best {
-  color: var(--lime);
-  text-shadow: 0 0 8px rgba(198, 255, 61, 0.6);
+  color: var(--accent);
 }
 
 .card-table td.dim {
-  color: rgba(143, 136, 201, 0.5);
+  color: rgba(176, 190, 167, 0.5);
   font-weight: 600;
 }
 
 .card-table tr.now td {
-  background: rgba(198, 255, 61, 0.06);
+  background: rgba(255, 210, 63, 0.08);
 }
 
 .card-table tr.now td:first-child {
-  color: var(--lime);
+  color: var(--accent);
 }
 
 .panel .note:empty {
@@ -1075,7 +1064,7 @@ button {
 .card-table tr.total td {
   border-top: 2px solid var(--line);
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 800;
   font-size: 20px;
 }
 
@@ -1092,7 +1081,7 @@ button {
 }
 
 .flash {
-  --c: var(--lime);
+  --c: var(--accent);
   position: fixed;
   inset: 0;
   pointer-events: none;

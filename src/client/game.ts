@@ -84,7 +84,6 @@ export class GameScreen {
     canvas.addEventListener("pointerup", (e) => this.pointerUp(e, false));
     canvas.addEventListener("pointercancel", (e) => this.pointerUp(e, true));
     new ResizeObserver(() => this.renderer.resize()).observe($("stage"));
-    void document.fonts?.ready.then(() => this.renderer.invalidate());
 
     $("handoff-ready").addEventListener("click", () => this.closeOverlay());
     $("menu-btn").addEventListener("click", () => this.openMenu());
@@ -116,7 +115,14 @@ export class GameScreen {
         busy: !!this.rolling || this.queue.length > 0,
         canAim: this.canAim(),
         overlay: this.overlay,
-        view: { s: this.renderer.s, ox: this.renderer.ox, oy: this.renderer.oy, maxDrag: this.maxDrag() },
+        view: {
+          s: this.renderer.s,
+          ox: this.renderer.ox,
+          oy: this.renderer.oy,
+          maxDrag: this.maxDrag(),
+          baked: this.renderer.baked,
+          bake: this.renderer.lastBake,
+        },
       }),
     };
   }
@@ -293,7 +299,7 @@ export class GameScreen {
       this.sinkAt = [null, null];
       this.trail = [];
       if (this.overlay === "scorecard") this.closeOverlay();
-      if (prev) this.callout(`Hole ${next.holeIdx + 1}`, "var(--lime)", holeOf(next).name, 1100);
+      if (prev) this.callout(`Hole ${next.holeIdx + 1}`, "var(--accent)", holeOf(next).name, 1100);
     } else if (shooter !== null) {
       const ball = next.balls[shooter];
       if (ball.done && !prev!.balls[shooter].done) {
@@ -480,7 +486,7 @@ export class GameScreen {
     const seat = rolling ? rolling.seat : m.turn;
     const turn = $("turn");
     const between = !rolling && m.phase !== "aim";
-    turn.style.setProperty("--c", between ? "var(--lime)" : PLAYER_COLORS[seat]);
+    turn.style.setProperty("--c", between ? "var(--accent)" : PLAYER_COLORS[seat]);
     const mine = me === null || me === seat;
     turn.classList.toggle("wait", !mine && !between);
     const name = this.names[seat];
@@ -564,7 +570,7 @@ export class GameScreen {
     const me = this.driver?.me ?? null;
     const panel = $("scorecard").querySelector<HTMLElement>(".panel")!;
     const win = final ? winner(m) : null;
-    panel.style.setProperty("--c", win === null || solo ? "var(--lime)" : PLAYER_COLORS[win]);
+    panel.style.setProperty("--c", win === null || solo ? "var(--accent)" : PLAYER_COLORS[win]);
 
     if (solo) {
       const diff = formatVsPar(soloVsPar(m));
