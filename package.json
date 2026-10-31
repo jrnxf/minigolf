@@ -18,6 +18,7 @@
     "typecheck": "tsc -p tsconfig.json && tsc -p worker/tsconfig.json",
     "test": "vitest run",
     "test:e2e": "node tests/e2e/pass-and-play.ts",
+    "test:solo": "node tests/e2e/solo.ts",
     "test:online": "node tests/e2e/online.ts"
   },
   "dependencies": {

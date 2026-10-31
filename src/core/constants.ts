@@ -16,9 +16,9 @@ export const SUBSTEPS = 4;
 export const H = 1 / 480;
 
 /** Course units per second at full power. */
-export const MAX_SPEED = 760;
-/** The weakest shot that counts as a stroke, as a fraction of MAX_SPEED. */
-export const MIN_POWER = 0.06;
+export const MAX_SPEED = 1025;
+/** The weakest shot that counts as a stroke, as a fraction of MAX_SPEED (about 45.6 units per second). */
+export const MIN_POWER = 0.0445;
 
 /** Linear rolling friction in units per second squared. */
 export const DECEL = 150;

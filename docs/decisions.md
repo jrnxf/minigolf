@@ -12,7 +12,7 @@ The game is one canvas plus a handful of simple screens. Vite gives a fast dev s
 
 ## One shared, deterministic core
 
-`src/core` holds the physics, the six holes, the match rules and the online protocol, and both the phone and the room server import it. The physics runs on a fixed clock (120 ticks a second, 4 substeps each) and uses only `+ - * /` and `Math.sqrt`, never `Math.exp`, `Math.hypot` or trigonometry, because those may round differently between JavaScript engines. A stroke is sent as a whole-number velocity, so a shot means the same thing everywhere. A unit test pins one shot's exact result, so an accidental physics change fails CI rather than splitting online games between versions.
+`src/core` holds the physics, the 18 holes, the match rules and the online protocol, and both the phone and the room server import it. The physics runs on a fixed clock (120 ticks a second, 4 substeps each) and uses only `+ - * /` and `Math.sqrt`, never `Math.exp`, `Math.hypot` or trigonometry, because those may round differently between JavaScript engines. A stroke is sent as a whole-number velocity, so a shot means the same thing everywhere. A unit test pins one shot's exact result, so an accidental physics change fails CI rather than splitting online games between versions.
 
 ## Cloudflare Worker with a Durable Object per room
 
@@ -28,9 +28,17 @@ A phone gets a random token on first launch and keeps it in local storage. That 
 
 - Strokes alternate; a player whose ball is in is skipped.
 - The lower score on the last hole tees off first on the next (the honour); a tie keeps the order.
-- A ball still out after 6 strokes is picked up and scores 7, so no hole drags on.
-- Lowest total after six holes wins. A rematch starts with the winner on the tee.
+- A ball still out after 6 strokes is picked up and scores 7, so no hole drags on (+3 on a par 4, +5 on a par 2).
+- Lowest total after 18 holes wins. A rematch starts with the winner on the tee.
 - Online, the next hole and a rematch wait until both players have tapped on, so nobody is rushed off the scorecard.
+
+## 18 holes, every one aceable
+
+The course is 18 holes, and every hole has a one-stroke line (a unit test proves it with the solver). A sweep of tee shots keeps each hole's hole-in-one rate between 0.005% and 2%: easy holes land about 1-2% of tee shots, the hardest far rarer but never zero. Full power is 1025 units a second (it was 760). The drag curve is unchanged for the first 70% of the pull and steeper for the rest, so soft putts feel as before and the extra power sits at the top. The curve lives only in the phone's input code: a stroke still travels as a whole-number velocity, and the room protocol version was bumped so a stale phone is refused rather than desyncing.
+
+## Solo play
+
+One player plays all 18 holes with a running score against par and an end-of-round card. It runs on the same match rules as pass & play with the second seat parked, so the stroke cap and pick-up score are identical. Nothing goes to a server. The best finished round (lowest total) is the only thing saved, in local storage on the phone, and shows on the home screen.
 
 ## Aim: drag anywhere with a bounce preview
 

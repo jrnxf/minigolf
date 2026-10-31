@@ -129,12 +129,12 @@ describe("simulateShot", () => {
 
 describe("shots", () => {
   it("turns an aim into whole units", () => {
-    expect(shotFromAim(-Math.PI / 2, 0.5)).toEqual({ vx: 0, vy: -380 });
+    expect(shotFromAim(-Math.PI / 2, 0.5)).toEqual({ vx: 0, vy: Math.round(-MAX_SPEED / 2) });
     expect(shotFromAim(0, 2)).toEqual({ vx: MAX_SPEED, vy: 0 });
   });
 
   it("accepts only shots a player could make", () => {
-    expect(isValidShot({ vx: 0, vy: -380 })).toBe(true);
+    expect(isValidShot({ vx: 0, vy: -500 })).toBe(true);
     expect(isValidShot({ vx: 0, vy: -1 })).toBe(false);
     expect(isValidShot({ vx: 0, vy: -2000 })).toBe(false);
     expect(isValidShot({ vx: 0.5, vy: -300 })).toBe(false);
@@ -158,8 +158,8 @@ describe("shots", () => {
 });
 
 describe("holes", () => {
-  it("has six holes with par 2 to 4", () => {
-    expect(HOLES).toHaveLength(6);
+  it("has eighteen holes with par 2 to 4", () => {
+    expect(HOLES).toHaveLength(18);
     for (const h of HOLES) expect(h.par).toBeGreaterThanOrEqual(2);
     for (const h of HOLES) expect(h.par).toBeLessThanOrEqual(4);
   });

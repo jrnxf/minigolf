@@ -1,4 +1,4 @@
-// End-to-end: a full six-hole pass-and-play game in headless Chrome at a
+// End-to-end: a full 18-hole pass-and-play game in headless Chrome at a
 // phone viewport, played through pointer events on the canvas, then a
 // rematch. Run with `pnpm test:e2e` (builds first, serves with vite preview).
 
@@ -85,7 +85,7 @@ try {
 
   const final = phone.state().match!;
   phone.screenshot("pp-final");
-  check(final.phase === "gameDone" && final.holeIdx === HOLES.length - 1, "all six holes played");
+  check(final.phase === "gameDone" && final.holeIdx === HOLES.length - 1, "all 18 holes played");
   check(
     final.scores.every((s) => s.every((n) => typeof n === "number" && n >= 1)),
     "every hole has a score for both players",

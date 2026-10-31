@@ -7,7 +7,7 @@
     <meta name="color-scheme" content="dark" />
     <meta
       name="description"
-      content="Two-player neon mini golf for your phone. Pass the phone or play a friend online."
+      content="Neon mini golf for your phone. Eighteen holes: play solo, pass the phone or play a friend online."
     />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -29,13 +29,15 @@
           <circle class="hero-ball" cx="40" cy="128" r="8" />
         </svg>
         <h1 class="logo"><span>Mini</span><span>Golf</span></h1>
-        <p class="tagline">Two players · six holes · neon night</p>
+        <p class="tagline">Solo or two players · 18 holes · neon night</p>
       </div>
       <div class="actions">
         <button class="btn primary" id="go-online">Play a friend online</button>
+        <button class="btn outline" id="go-solo">Play solo</button>
         <button class="btn outline" id="go-local">Pass &amp; play on this phone</button>
         <button class="btn ghost" id="resume-local" hidden>Resume your game</button>
       </div>
+      <p class="best" id="solo-best" hidden></p>
       <button class="sound-toggle" id="sound-toggle" aria-pressed="true">Sound on</button>
     </section>
 
@@ -132,7 +134,7 @@
       <form class="pad stack" id="join-form">
         <div class="label" id="join-code"></div>
         <h2 class="headline" id="join-title">You're invited</h2>
-        <p class="lead" id="join-lead">Two players, six holes. Takes about ten minutes.</p>
+        <p class="lead" id="join-lead">Two players, 18 holes. Takes about thirty minutes.</p>
         <label class="field" style="--c: var(--p2)" id="join-name-field">
           <span>Your name</span>
           <input id="join-name" maxlength="12" autocomplete="off" spellcheck="false" placeholder="Kai" />
@@ -194,7 +196,7 @@
       <div class="panel">
         <h2 id="score-title">Hole 1 clear</h2>
         <p class="sub" id="score-sub"></p>
-        <table class="card-table" id="score-table"></table>
+        <div class="card-scroll" id="score-scroll"><table class="card-table" id="score-table"></table></div>
         <button class="btn primary" id="score-next">Next hole</button>
         <button class="btn ghost" id="score-home" hidden>Home</button>
         <p class="note center" id="score-note"></p>

@@ -5,6 +5,7 @@ import { execFileSync, spawn, type ChildProcess } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { dragFromPower } from "../../src/client/power.ts";
 import type { MatchState, Seat } from "../../src/core/match.ts";
 
 export const VIEWPORT = "390x844x2,mobile,touch";
@@ -101,7 +102,7 @@ export class Browser {
     this.run(`await page.eval(async () => {
       const c = document.getElementById("canvas");
       const r = c.getBoundingClientRect();
-      const len = ${power} * window.__minigolf.state().view.maxDrag;
+      const len = ${dragFromPower(power)} * window.__minigolf.state().view.maxDrag;
       const sx = r.width / 2, sy = r.height / 2;
       const ex = sx - Math.cos(${angle}) * len, ey = sy - Math.sin(${angle}) * len;
       const fire = (type, x, y) => c.dispatchEvent(new PointerEvent(type, {
@@ -122,7 +123,7 @@ export class Browser {
     this.run(`await page.eval(() => {
       const c = document.getElementById("canvas");
       const r = c.getBoundingClientRect();
-      const len = ${power} * window.__minigolf.state().view.maxDrag;
+      const len = ${dragFromPower(power)} * window.__minigolf.state().view.maxDrag;
       const x = r.width / 2 - Math.cos(${angle}) * len, y = r.height / 2 - Math.sin(${angle}) * len;
       c.dispatchEvent(new PointerEvent("pointerup", { pointerId: 11, pointerType: "touch", isPrimary: true, bubbles: true, clientX: r.left + x, clientY: r.top + y }));
     });`);
