@@ -1,7 +1,7 @@
 {
   "name": "Minigolf",
   "short_name": "Minigolf",
-  "description": "Two-player neon mini golf. Pass the phone or play a friend online.",
+  "description": "Neon mini golf for your phone. Eighteen holes: play solo, pass the phone or play a friend online.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
