@@ -36,14 +36,14 @@ pnpm preview        # production build served by `wrangler dev` on :8787, app an
 ```sh
 pnpm lint           # eslint + prettier
 pnpm typecheck      # app, tests and worker
-pnpm test           # unit tests: physics, rules, rooms, protocol
+pnpm test           # unit tests: physics, rules, rooms, protocol, course bake
 pnpm test:e2e       # a full 18-hole pass-and-play game in headless Chrome at 390x844, plus offline load
 pnpm test:solo      # a full 18-hole solo round in headless Chrome, then the best round on the home screen
 pnpm test:online    # two clients against `wrangler dev`: join, turns, reconnect, leave
 pnpm test:look      # plays to the Volcano, Sand Alley and Twin Peaks and checks the colours on screen
 ```
 
-The two browser suites drive Chrome through [`chrome-devtools-axi`](https://www.npmjs.com/package/chrome-devtools-axi), which must be on your `PATH`. Set `E2E_SHOTS=<folder>` to keep their screenshots. CI runs lint, type-check, unit tests and a build.
+The browser suites drive Chrome through [`chrome-devtools-axi`](https://www.npmjs.com/package/chrome-devtools-axi), which must be on your `PATH`. Set `E2E_SHOTS=<folder>` to keep their screenshots. CI runs lint, type-check, unit tests and a build.
 
 ## Deploy
 
