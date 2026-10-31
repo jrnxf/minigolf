@@ -4,7 +4,8 @@
 import type { MatchState, Seat } from "./match.ts";
 import { isValidShot, type Shot } from "./physics.ts";
 
-export const PROTOCOL = 1;
+/** Bump whenever the physics or the holes change, so a stale phone is refused instead of desyncing. */
+export const PROTOCOL = 2;
 
 /** Room codes avoid vowels (no accidental words) and look-alikes like 0/O and 1/I. */
 export const CODE_ALPHABET = "BCDFGHJKLMNPQRSTVWXZ23456789";

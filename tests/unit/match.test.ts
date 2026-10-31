@@ -108,7 +108,9 @@ describe("holes and honour", () => {
     let m = createMatch();
     while (m.phase !== "gameDone") {
       if (m.phase === "holeDone") m = nextHole(m)!;
-      else m = sinkNow(m, m.turn);
+      // Rock each ball back and forth by the tee until it is picked up: the
+      // whole course's flow without a solver search per stroke.
+      else m = applyShot(m, m.turn, { vx: 0, vy: m.balls[m.turn].strokes % 2 ? 60 : -60 })!.state;
     }
     expect(m.holeIdx).toBe(HOLES.length - 1);
     expect(m.scores[0].every((s) => s !== null)).toBe(true);

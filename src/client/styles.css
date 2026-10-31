@@ -413,6 +413,19 @@ button {
   padding: 12px 20px 8px;
 }
 
+.best {
+  margin-top: 4px;
+  text-align: center;
+  color: var(--lime);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.best[hidden] {
+  display: none;
+}
+
 .sound-toggle {
   align-self: center;
   margin: 4px 0 16px;
@@ -958,6 +971,27 @@ button {
     0 0 60px -10px var(--c);
 }
 
+/* Title and buttons stay put; only the eighteen rows scroll. */
+#scorecard .panel {
+  overflow: hidden;
+}
+
+#scorecard .panel > * {
+  flex-shrink: 0;
+}
+
+.card-scroll {
+  position: relative;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+#scorecard .panel > .card-scroll {
+  flex-shrink: 1;
+}
+
 .card-table {
   width: 100%;
   border-collapse: collapse;
@@ -975,6 +1009,20 @@ button {
   text-shadow: 0 0 8px var(--c);
   overflow-wrap: anywhere;
   text-transform: uppercase;
+}
+
+/* With eighteen rows the header and the total stay in view while the rows scroll. */
+.card-table th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+}
+
+.card-table tr.total td {
+  position: sticky;
+  bottom: 0;
+  background: var(--panel);
+  box-shadow: 0 -2px 0 var(--line);
 }
 
 .card-table th.long {
@@ -995,7 +1043,7 @@ button {
 }
 
 .card-table td {
-  padding: 7px 4px;
+  padding: 5px 4px;
   border-top: 1px solid var(--line);
   font-weight: 800;
   font-size: 18px;

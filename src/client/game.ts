@@ -2,23 +2,29 @@
 // between strokes. It only shows a match; a driver (pass-and-play or
 // online) decides what the next state is.
 
-import { MIN_POWER, TICK_HZ } from "../core/constants.ts";
+import { TICK_HZ } from "../core/constants.ts";
 import { HOLES, type Point } from "../core/holes.ts";
 import { holeOf, other, scoreName, total, winner, type MatchState, type Seat } from "../core/match.ts";
 import { shotFromAim, simulateShot, type Shot, type ShotResult } from "../core/physics.ts";
 import type { Aim } from "../core/protocol.ts";
+import { formatVsPar, soloTotal, soloVsPar } from "../core/solo.ts";
 import { $, show } from "./dom.ts";
+import { MIN_DRAG, powerFromDrag } from "./power.ts";
 import { PLAYER_COLORS, Renderer, type AimSprite, type Joystick, type Scene } from "./render.ts";
 import { sfx } from "./sfx.ts";
 
 export interface Driver {
   /** The seat this phone plays, or null when both players share it. */
   readonly me: Seat | null;
+  /** One player on one phone: no second seat, scores read against par. */
+  readonly solo?: boolean;
   shoot(shot: Shot): void;
   aim(aim: Aim | null): void;
   next(): void;
   again(): void;
   quit(): void;
+  /** Solo: the line under the final card. */
+  finalNote?(): string;
 }
 
 type QueueItem =
@@ -125,7 +131,8 @@ export class GameScreen {
     this.sinkAt = [null, null];
     this.flags = { ready: [false, false], rematch: [false, false] };
     this.connected = true;
-    for (const seat of [0, 1] as const) {
+    $("hud-1").hidden = !!driver.solo;
+    for (const seat of (driver.solo ? [0] : [0, 1]) as Seat[]) {
       const el = $(`hud-${seat}`).querySelector(".hud-name")!;
       el.textContent = names[seat];
       const len = Array.from(names[seat]).length;
@@ -365,9 +372,9 @@ export class GameScreen {
     // Pull back like a slingshot: the ball goes the opposite way to the drag.
     const dx = d.x - p.x;
     const dy = d.y - p.y;
-    const power = Math.min(1, Math.hypot(dx, dy) / this.maxDrag());
+    const drag = Math.min(1, Math.hypot(dx, dy) / this.maxDrag());
     const before = d.aim;
-    d.aim = power >= MIN_POWER ? { angle: Math.atan2(dy, dx), power } : null;
+    d.aim = drag >= MIN_DRAG ? { angle: Math.atan2(dy, dx), power: powerFromDrag(drag) } : null;
     if (d.aim && (!before || Math.round(before.power * 20) !== Math.round(d.aim.power * 20))) sfx.tick();
     this.preview = d.aim ? this.aimSprite(this.match!.turn, d.aim, false) : null;
     const now = performance.now();
@@ -457,12 +464,15 @@ export class GameScreen {
     const hole = holeOf(m);
     const me = this.driver?.me ?? null;
     const rolling = this.rolling;
-    for (const seat of [0, 1] as const) {
+    const solo = !!this.driver?.solo;
+    for (const seat of solo ? [0 as const] : ([0, 1] as const)) {
       const el = $(`hud-${seat}`);
       el.classList.toggle("on", m.turn === seat && m.phase === "aim");
       const b = m.balls[seat];
       const state = b.pickedUp ? "picked up" : b.done ? "in" : `stroke ${b.strokes}`;
-      el.querySelector(".hud-meta")!.textContent = `${total(m, seat)} total · ${state}`;
+      el.querySelector(".hud-meta")!.textContent = solo
+        ? `${formatVsPar(soloVsPar(m))} vs par · ${state}`
+        : `${total(m, seat)} total · ${state}`;
     }
     $("hud-hole").textContent = `H${m.holeIdx + 1}`;
     $("hud-par").textContent = `par ${hole.par}`;
@@ -531,7 +541,8 @@ export class GameScreen {
     if (this.overlay === "ended") return;
     this.cancelDrag();
     this.syncSoundLabel();
-    $("menu-quit").textContent = this.driver?.me === null ? "End game" : "Leave game";
+    $("menu-quit").textContent =
+      this.driver?.me === null ? (this.driver.solo ? "End round" : "End game") : "Leave game";
     this.openOverlay("menu");
   }
 
@@ -549,12 +560,23 @@ export class GameScreen {
     const m = this.match;
     if (!m || this.overlay !== "scorecard") return;
     const final = m.phase === "gameDone";
+    const solo = !!this.driver?.solo;
     const me = this.driver?.me ?? null;
     const panel = $("scorecard").querySelector<HTMLElement>(".panel")!;
     const win = final ? winner(m) : null;
-    panel.style.setProperty("--c", win === null ? "var(--lime)" : PLAYER_COLORS[win]);
+    panel.style.setProperty("--c", win === null || solo ? "var(--lime)" : PLAYER_COLORS[win]);
 
-    if (final) {
+    if (solo) {
+      const diff = formatVsPar(soloVsPar(m));
+      if (final) {
+        $("score-title").textContent = "Round complete";
+        $("score-sub").textContent = `${soloTotal(m)} strokes · ${diff} vs par`;
+      } else {
+        const next = HOLES[m.holeIdx + 1]!;
+        $("score-title").textContent = `Hole ${m.holeIdx + 1} clear`;
+        $("score-sub").textContent = `${diff} vs par · Next: ${next.name} · par ${next.par}`;
+      }
+    } else if (final) {
       $("score-title").textContent =
         win === null
           ? "Dead heat"
@@ -570,6 +592,55 @@ export class GameScreen {
       $("score-sub").textContent = `Next: ${next.name} · par ${next.par}`;
     }
 
+    $("score-table").innerHTML = (solo ? this.soloRows(m) : this.matchRows(m)).join("");
+    // Eighteen rows outgrow a phone: the table scrolls on its own, just far enough to show the hole
+    // just played above the pinned total row. Done after layout, once the panel has its final height.
+    requestAnimationFrame(() => {
+      const scroll = $("score-scroll");
+      const row = $("score-table").querySelector<HTMLElement>("tr.now");
+      const totalRow = $("score-table").querySelector<HTMLElement>("tr.total");
+      if (row && totalRow) {
+        scroll.scrollTop = row.offsetTop + row.offsetHeight - (scroll.clientHeight - totalRow.offsetHeight);
+      }
+    });
+
+    const btn = $<HTMLButtonElement>("score-next");
+    const note = $("score-note");
+    const flags = final ? this.flags.rematch : this.flags.ready;
+    btn.textContent = final ? (solo ? "Play again" : "Run it back") : "Next hole";
+    btn.disabled = false;
+    note.textContent = final && solo ? (this.driver?.finalNote?.() ?? "") : "";
+    $("score-home").hidden = !final;
+    if (me !== null) {
+      const friend = this.names[other(me)];
+      if (flags[me]) {
+        btn.disabled = true;
+        btn.textContent = `Waiting for ${friend}`;
+      } else if (flags[other(me)]) {
+        note.textContent = final ? `${friend} wants a rematch` : `${friend} is ready`;
+      }
+    }
+  }
+
+  private soloRows(m: MatchState): string[] {
+    const rows = [
+      `<tr><th style="--c:${PLAYER_COLORS[0]}"></th><th style="--c:${PLAYER_COLORS[0]}">Strokes</th><th style="--c:${PLAYER_COLORS[0]}">vs par</th></tr>`,
+    ];
+    HOLES.forEach((h, i) => {
+      const s = m.scores[0][i] ?? null;
+      const cells =
+        s === null
+          ? `<td class="dim">·</td><td class="dim">·</td>`
+          : `<td>${s}</td><td class="${s < h.par ? "best" : ""}">${formatVsPar(s - h.par)}</td>`;
+      rows.push(`<tr class="${i === m.holeIdx ? "now" : ""}"><td>H${i + 1} · par ${h.par}</td>${cells}</tr>`);
+    });
+    rows.push(
+      `<tr class="total"><td>Total</td><td>${soloTotal(m)}</td><td>${formatVsPar(soloVsPar(m))}</td></tr>`,
+    );
+    return rows;
+  }
+
+  private matchRows(m: MatchState): string[] {
     const rows: string[] = [];
     rows.push(
       `<tr><th></th>${([0, 1] as const)
@@ -592,30 +663,12 @@ export class GameScreen {
     const vsPar = (seat: Seat) => {
       const played = m.scores[seat].slice(0, m.holeIdx + 1).every((s) => s !== null);
       if (!played) return "";
-      const d = total(m, seat) - par;
-      return ` <small>${d === 0 ? "E" : d > 0 ? `+${d}` : d}</small>`;
+      return ` <small>${formatVsPar(total(m, seat) - par)}</small>`;
     };
     rows.push(
       `<tr class="total"><td>Total</td><td>${total(m, 0)}${vsPar(0)}</td><td>${total(m, 1)}${vsPar(1)}</td></tr>`,
     );
-    $("score-table").innerHTML = rows.join("");
-
-    const btn = $<HTMLButtonElement>("score-next");
-    const note = $("score-note");
-    const flags = final ? this.flags.rematch : this.flags.ready;
-    btn.textContent = final ? "Run it back" : "Next hole";
-    btn.disabled = false;
-    note.textContent = "";
-    $("score-home").hidden = !final;
-    if (me !== null) {
-      const friend = this.names[other(me)];
-      if (flags[me]) {
-        btn.disabled = true;
-        btn.textContent = `Waiting for ${friend}`;
-      } else if (flags[other(me)]) {
-        note.textContent = final ? `${friend} wants a rematch` : `${friend} is ready`;
-      }
-    }
+    return rows;
   }
 
   private callout(text: string, color: string, sub: string, ms: number) {

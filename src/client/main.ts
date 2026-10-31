@@ -2,11 +2,13 @@ import "@fontsource/bungee/latin-400.css";
 import "@fontsource-variable/outfit/wght.css";
 import "./styles.css";
 
+import { formatVsPar } from "../core/solo.ts";
 import { cleanName, isCode, normalizeCode, type ErrorCode } from "../core/protocol.ts";
 import { $, show } from "./dom.ts";
 import { GameScreen } from "./game.ts";
 import { LocalGame, savedLocalGame } from "./local.ts";
 import { OnlineSession } from "./online.ts";
+import { SoloGame, loadBest } from "./solo.ts";
 import { sfx } from "./sfx.ts";
 import { load, save } from "./storage.ts";
 
@@ -25,6 +27,9 @@ function goHome(replace = true) {
   if (screen.active) screen.stop();
   if (location.pathname !== "/") history[replace ? "replaceState" : "pushState"](null, "", "/");
   $("resume-local").hidden = !savedLocalGame();
+  const best = loadBest();
+  $("solo-best").hidden = !best;
+  if (best) $("solo-best").textContent = `Best solo round ${best.strokes} (${formatVsPar(best.vsPar)})`;
   show("home");
 }
 
@@ -65,6 +70,8 @@ $("go-local").addEventListener("click", () => {
   $<HTMLInputElement>("local-name-1").value = names[1] ?? "";
   show("local-setup");
 });
+
+$("go-solo").addEventListener("click", () => new SoloGame(screen, "You", () => goHome()));
 
 $("resume-local").addEventListener("click", () => {
   const saved = savedLocalGame();
@@ -159,7 +166,7 @@ async function openRoom(code: string) {
   show("join");
   $("join-code").textContent = `Room ${code}`;
   $("join-title").textContent = "You're invited";
-  $("join-lead").textContent = "Two players, six holes, about ten minutes.";
+  $("join-lead").textContent = "Two players, 18 holes, about thirty minutes.";
   $("join-name-field").hidden = false;
   $<HTMLInputElement>("join-name").value = load("name") ?? "";
   $("join-go").hidden = false;

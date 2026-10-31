@@ -91,6 +91,8 @@ const FULL: HoleDef["outline"] = [
   [20, COURSE_H - 20],
 ];
 
+// Sideways slopes stay under the rolling friction (150): a stronger one pins a
+// ball against the wall for good and the stroke runs out the 30 second clock.
 export const HOLES: readonly Hole[] = [
   buildHole({
     name: "The Gate",
@@ -167,9 +169,12 @@ export const HOLES: readonly Hole[] = [
       { x: 20, y: 150, w: 190, h: 20 },
       { x: 90, y: 320, w: 190, h: 20 },
     ],
-    sand: [{ x: 150, y: 190, w: 130, h: 56 }],
-    slopes: [{ x: 20, y: 360, w: 70, h: 120, ax: 0, ay: -200 }],
-    bumpers: [{ x: 168, y: 86, r: 13 }],
+    sand: [{ x: 20, y: 190, w: 75, h: 56 }],
+    slopes: [
+      { x: 20, y: 360, w: 70, h: 120, ax: 0, ay: -200 },
+      { x: 20, y: 20, w: 260, h: 130, ax: -140, ay: 0 },
+    ],
+    bumpers: [{ x: 168, y: 115, r: 13 }],
   }),
   buildHole({
     name: "Volcano",
@@ -194,6 +199,169 @@ export const HOLES: readonly Hole[] = [
     bumpers: [
       { x: 64, y: 160, r: 12 },
       { x: 236, y: 160, r: 12 },
+    ],
+  }),
+  buildHole({
+    name: "Bank Shot",
+    par: 2,
+    outline: FULL,
+    tee: { x: 75, y: 435 },
+    cup: { x: 75, y: 90 },
+    blocks: [{ x: 20, y: 230, w: 190, h: 24 }],
+  }),
+  buildHole({
+    name: "Sand Alley",
+    par: 3,
+    outline: [
+      [90, 20],
+      [210, 20],
+      [210, 480],
+      [90, 480],
+    ],
+    tee: { x: 150, y: 440 },
+    cup: { x: 150, y: 60 },
+    sand: [
+      { x: 90, y: 300, w: 66, h: 70 },
+      { x: 144, y: 180, w: 66, h: 70 },
+    ],
+    bumpers: [{ x: 150, y: 120, r: 10 }],
+  }),
+  buildHole({
+    name: "Crosswind",
+    par: 3,
+    outline: FULL,
+    tee: { x: 150, y: 440 },
+    cup: { x: 150, y: 70 },
+    slopes: [
+      { x: 20, y: 300, w: 260, h: 60, ax: -140, ay: 0 },
+      { x: 20, y: 160, w: 260, h: 60, ax: 140, ay: 0 },
+    ],
+    bumpers: [
+      { x: 60, y: 250, r: 12 },
+      { x: 240, y: 250, r: 12 },
+    ],
+  }),
+  buildHole({
+    name: "Diamond",
+    par: 2,
+    outline: [
+      [150, 20],
+      [280, 250],
+      [150, 480],
+      [20, 250],
+    ],
+    tee: { x: 150, y: 430 },
+    cup: { x: 175, y: 75 },
+    mounds: [{ x: 150, y: 250, r: 62, strength: 520 }],
+  }),
+  buildHole({
+    name: "Hairpin",
+    par: 4,
+    outline: FULL,
+    tee: { x: 75, y: 440 },
+    cup: { x: 225, y: 430 },
+    blocks: [{ x: 135, y: 130, w: 30, h: 350 }],
+    rails: [
+      [20, 80, 80, 20],
+      [220, 20, 280, 80],
+    ],
+    slopes: [{ x: 165, y: 150, w: 115, h: 255, ax: 0, ay: 170 }],
+    bumpers: [{ x: 150, y: 70, r: 12 }],
+  }),
+  buildHole({
+    name: "Pinwheel",
+    par: 3,
+    outline: FULL,
+    tee: { x: 150, y: 440 },
+    cup: { x: 150, y: 250 },
+    rails: [
+      [105, 205, 175, 205],
+      [195, 205, 195, 275],
+      [195, 295, 125, 295],
+      [105, 295, 105, 225],
+    ],
+    bumpers: [
+      { x: 70, y: 120, r: 13 },
+      { x: 230, y: 120, r: 13 },
+      { x: 150, y: 90, r: 11 },
+    ],
+  }),
+  buildHole({
+    name: "Twin Peaks",
+    par: 3,
+    outline: FULL,
+    tee: { x: 150, y: 440 },
+    cup: { x: 205, y: 90 },
+    mounds: [
+      { x: 88, y: 260, r: 58, strength: 520 },
+      { x: 212, y: 260, r: 58, strength: 520 },
+    ],
+    sand: [{ x: 20, y: 20, w: 260, h: 46 }],
+    bumpers: [
+      { x: 45, y: 140, r: 11 },
+      { x: 255, y: 140, r: 11 },
+    ],
+  }),
+  buildHole({
+    name: "Ricochet Row",
+    par: 2,
+    outline: FULL,
+    tee: { x: 150, y: 440 },
+    cup: { x: 150, y: 90 },
+    bumpers: [
+      { x: 45, y: 250, r: 12 },
+      { x: 97, y: 250, r: 12 },
+      { x: 150, y: 250, r: 12 },
+      { x: 203, y: 250, r: 12 },
+      { x: 255, y: 250, r: 12 },
+    ],
+  }),
+  buildHole({
+    name: "Keyhole",
+    par: 2,
+    outline: FULL,
+    tee: { x: 150, y: 440 },
+    cup: { x: 100, y: 80 },
+    blocks: [
+      { x: 20, y: 240, w: 180, h: 20 },
+      { x: 226, y: 240, w: 54, h: 20 },
+    ],
+  }),
+  buildHole({
+    name: "Slide",
+    par: 3,
+    outline: [
+      [20, 20],
+      [280, 20],
+      [280, 480],
+      [160, 480],
+      [160, 160],
+      [20, 160],
+    ],
+    tee: { x: 220, y: 440 },
+    cup: { x: 60, y: 90 },
+    slopes: [{ x: 160, y: 20, w: 120, h: 140, ax: -140, ay: 0 }],
+    bumpers: [{ x: 120, y: 60, r: 11 }],
+  }),
+  buildHole({
+    name: "Bunker Blast",
+    par: 3,
+    outline: FULL,
+    tee: { x: 150, y: 440 },
+    cup: { x: 150, y: 80 },
+    sand: [{ x: 20, y: 190, w: 260, h: 110 }],
+    bumpers: [{ x: 150, y: 150, r: 11 }],
+  }),
+  buildHole({
+    name: "Bank Vault",
+    par: 3,
+    outline: FULL,
+    tee: { x: 150, y: 440 },
+    cup: { x: 150, y: 210 },
+    blocks: [
+      { x: 105, y: 175, w: 10, h: 75 },
+      { x: 185, y: 175, w: 10, h: 75 },
+      { x: 105, y: 240, w: 90, h: 10 },
     ],
   }),
 ];
